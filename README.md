@@ -12,4 +12,6 @@ then you'll have to edit the code to point to where you downloaded the data.
 This file uses [tensorflow-recommenders](https://github.com/tensorflow/recommenders) to make recommendations to users on
 what to watch, using the [movielens-100k](https://grouplens.org/datasets/movielens/100k/) dataset. It uses the 
 [tensorflow-datasets](https://github.com/tensorflow/datasets/) library to import the data, so you shouldn't have to 
-change any filepaths if you wish to use this on your own.
+change any filepaths if you wish to use this on your own. The **movielens_1.png** image shown below displays some 
+training results from the script.
+![movielens selector results](movielens_1.png)
