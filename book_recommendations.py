@@ -5,13 +5,17 @@ from surprise import SVD as Algorithm
 from surprise.model_selection import GridSearchCV
 
 
+# CHANGE THIS TO MATCH WHERE YOU DOWNLOADED THE BOOK DATASET
+FILEPATH = '/home/dominik/cifsmnt/book_recommendations/Ratings.csv'
+
+
 def load_data():
     '''
     Loads in data
     :return:
     '''
 
-    data = pd.read_csv('/home/dominik/cifsmnt/book_recommendations/Ratings.csv')
+    data = pd.read_csv(FILEPATH)
     data.columns = ["user", "item", "rating"]
 
     return data
