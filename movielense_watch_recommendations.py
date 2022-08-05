@@ -50,8 +50,7 @@ def load_datasets():
 
     # Ratings data
     ratings = tfds.load('movielens/100k-ratings', split="train")
-    for d in ratings.take(1):
-        print(d)
+
     # Features of all the available movies.
     movies = tfds.load('movielens/100k-movies', split="train")
 
@@ -65,44 +64,25 @@ def load_datasets():
     return ratings, movies
 
 
-def build_user_model(ratings: tf.data.Dataset):
-    '''
-    Builds the user_model for use in the MovieLens recommender
-    :param ratings: The ratings dataset
-    :return: the user_model
-    '''
-
-    # Build vocabulary to convert user ids into integer indices for embedding layers
-    user_ids_vocabulary = tf.keras.layers.StringLookup(mask_token=None)
-    user_ids_vocabulary.adapt(ratings.map(lambda x: x["user_id"]))
-
-    # Define the user model
-    user_model = tf.keras.Sequential([
-        user_ids_vocabulary,
-        tf.keras.layers.Embedding(user_ids_vocabulary.vocab_size(), 64)
-    ])
-
-    return user_model
-
-
-def build_movie_model(movies: tf.data.Dataset):
-    '''
-    Builds the movie_model for use in the MovieLens recommender
-    :param movies: The movies dataset
-    :return: the movies_model
-    '''
+def build_model(data: tf.data.Dataset):
+    """
+    Builds the movie_model or the user_model depending on which dataset is passed to the function
+    :param data: the input dataset, (if passing in the ratings dataset to create the user model, ensure that only the
+    user ids are passed in)
+    :return:
+    """
 
     # Build vocabulary to convert movie ids into integer indices for embedding layers
-    movie_titles_vocabulary = tf.keras.layers.StringLookup(mask_token=None)
-    movie_titles_vocabulary.adapt(movies)
+    vocabulary = tf.keras.layers.StringLookup(mask_token=None)
+    vocabulary.adapt(data)
 
     # Define the movie model
-    movie_model = tf.keras.Sequential([
-        movie_titles_vocabulary,
-        tf.keras.layers.Embedding(movie_titles_vocabulary.vocab_size(), 64)
+    model = tf.keras.Sequential([
+        vocabulary,
+        tf.keras.layers.Embedding(vocabulary.vocab_size(), 64)
     ])
 
-    return movie_model
+    return model
 
 
 def plot_results_from_history(history):
@@ -133,10 +113,10 @@ if __name__ == '__main__':
     ratings, movies = load_datasets()
 
     # Build the user model
-    user_model = build_user_model(ratings)
+    user_model = build_model(ratings.map(lambda x: x['user_id']))
 
     # Build the movie model
-    movie_model = build_movie_model(movies)
+    movie_model = build_model(movies)
 
     # Define the task
     task = tfrs.tasks.Retrieval(
